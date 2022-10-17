@@ -1,9 +1,12 @@
-package com.example.inditex.inditex;
+package com.example.inditex;
 
-import java.io.Console;
+import java.util.Arrays;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class InditexApplication {
