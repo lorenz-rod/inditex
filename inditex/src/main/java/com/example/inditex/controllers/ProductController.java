@@ -22,10 +22,11 @@ public class ProductController {
     public String getDetailsOfSimilarProducts(@PathVariable String productId, HttpServletResponse response) {
         try {
             var products = productService.getDetailsOfSimilarProducts(productId);
+            if (products == null) {
+                return customError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,"Products service currently unavailable", response);
+            }
             if (products.isEmpty()) {
-                HttpClientException productNotFound = new HttpClientException(404, "Not found");
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return returnError(productNotFound);
+                return customError(HttpServletResponse.SC_NOT_FOUND,"Not found", response);
             } else {
                 return new ObjectMapper().writeValueAsString(products);
             }
@@ -37,6 +38,12 @@ public class ProductController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             throw new RuntimeException(e);
         }
+    }
+
+    private String customError(int code, String message, HttpServletResponse response) {
+        HttpClientException productNotFound = new HttpClientException(code, message);
+        response.setStatus(code);
+        return returnError(productNotFound);
     }
 
     private String returnError(HttpClientException e) {

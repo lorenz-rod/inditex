@@ -70,6 +70,21 @@ public class ProductControllerTests {
     }
 
     @Test
+    void getDetailsOfSimilarProducts_NoResponseFromProductsService() throws HttpClientException {
+        given(productService.getDetailsOfSimilarProducts("3")).willReturn(null);
+        try {
+            mvc.perform(get("/product/3/similar")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isInternalServerError())
+                    .andExpect(jsonPath("status", is("500")))
+                    .andExpect(jsonPath("error", is("Products service currently unavailable")));
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
     void getDetailsOfSimilarProducts_ErrorHttpClientException() throws HttpClientException {
         List<Product> mockAnswer = new ArrayList<>();
         given(productService.getDetailsOfSimilarProducts("3")).willThrow(new HttpClientException(500,"Internal server error"));
