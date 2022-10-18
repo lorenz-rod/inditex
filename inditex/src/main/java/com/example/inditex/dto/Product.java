@@ -1,6 +1,7 @@
 package com.example.inditex.dto;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Product implements Serializable {
     //ID is defined as String in the API contract
@@ -8,6 +9,13 @@ public class Product implements Serializable {
     private String name;
     private double price;
     private boolean availability;
+
+    public Product(String id, String name, double price, boolean availability) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.availability = availability;
+    }
 
     public String getId() {
         return id;
@@ -39,5 +47,18 @@ public class Product implements Serializable {
 
     public void setAvailability(boolean availability) {
         this.availability = availability;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return Double.compare(product.price, price) == 0 && availability == product.availability && Objects.equals(id, product.id) && Objects.equals(name, product.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, price, availability);
     }
 }
