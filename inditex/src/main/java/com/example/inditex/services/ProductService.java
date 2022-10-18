@@ -60,7 +60,7 @@ public class ProductService {
 	}
 
 	@Async
-	CompletableFuture<Product> getDetailOfProduct(String productId) {
+	protected CompletableFuture<Product> getDetailOfProduct(String productId) {
 		try {
 			Product product
 					= restTemplate.getForObject(PRODUCT_URL + productId, Product.class);
