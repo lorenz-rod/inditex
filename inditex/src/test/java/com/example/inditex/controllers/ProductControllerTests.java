@@ -15,6 +15,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -56,28 +57,27 @@ public class ProductControllerTests {
     @Test
     void getDetailsOfSimilarProducts_EmptyResponse() throws HttpClientException {
         List<Product> mockAnswer = new ArrayList<>();
-        given(productService.getDetailsOfSimilarProducts("3")).willReturn(mockAnswer);
-        try {
-            mvc.perform(get("/product/3/similar")
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("status", is("404")))
-                    .andExpect(jsonPath("error", is("Not found")));
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        int httpCode = 404;
+        String message = "Not found";
+        getDetailsOfSimilarProducts_GenericNoProducts(mockAnswer, httpCode, message);
     }
 
     @Test
     void getDetailsOfSimilarProducts_NoResponseFromProductsService() throws HttpClientException {
-        given(productService.getDetailsOfSimilarProducts("3")).willReturn(null);
+        int httpCode = 500;
+        String message = "Products service currently unavailable";
+        getDetailsOfSimilarProducts_GenericNoProducts(null, httpCode, message);
+    }
+
+    private void getDetailsOfSimilarProducts_GenericNoProducts(List<Product> expectedProducts, int expectedHttpCode, String expectedMessage) throws HttpClientException {
+        List<Product> mockAnswer = new ArrayList<>();
+        given(productService.getDetailsOfSimilarProducts("3")).willReturn(expectedProducts);
         try {
             mvc.perform(get("/product/3/similar")
                             .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isInternalServerError())
-                    .andExpect(jsonPath("status", is("500")))
-                    .andExpect(jsonPath("error", is("Products service currently unavailable")));
+                    .andExpect(status().is(expectedHttpCode))
+                    .andExpect(jsonPath("status", is(String.valueOf(expectedHttpCode))))
+                    .andExpect(jsonPath("error", is(expectedMessage)));
 
         } catch (Exception e) {
             throw new RuntimeException(e);
