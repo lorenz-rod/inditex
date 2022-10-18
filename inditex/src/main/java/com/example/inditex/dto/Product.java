@@ -10,6 +10,8 @@ public class Product implements Serializable {
     private double price;
     private boolean availability;
 
+    public Product() {}
+
     public Product(String id, String name, double price, boolean availability) {
         this.id = id;
         this.name = name;
